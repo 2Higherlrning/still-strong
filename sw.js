@@ -1,9 +1,10 @@
-const CACHE_NAME = "still-strong-v1";
+const CACHE_NAME = "still-strong-v3";
 const APP_ASSETS = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
+  "./supabase-config.js",
   "./manifest.webmanifest",
   "./icons/icon.svg",
   "./icons/apple-touch-icon.svg"

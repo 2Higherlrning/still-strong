@@ -13,12 +13,16 @@ const state = {
   customExercises: JSON.parse(localStorage.getItem("stillStrongCustomExercises") || "[]"),
   removedExercises: JSON.parse(localStorage.getItem("stillStrongRemovedExercises") || "{}"),
   swappedExercises: JSON.parse(localStorage.getItem("stillStrongSwappedExercises") || "{}"),
+  progressPhotos: JSON.parse(localStorage.getItem("stillStrongProgressPhotos") || "[]"),
+  recipeFilter: "all",
   quickMode: localStorage.getItem("stillStrongQuickMode") || ""
 };
 
 let timerSeconds = 45;
 let timerId = null;
 let deferredInstallPrompt = null;
+let supabaseClient = null;
+let currentUser = null;
 
 const exerciseLibrary = {
   weights: {
@@ -200,6 +204,51 @@ const meals = [
   ]
 ];
 
+const recipes = [
+  {
+    title: "Rotisserie Protein Bowl",
+    tags: ["protein", "nocook", "budget"],
+    time: "10 min",
+    ingredients: ["Rotisserie chicken", "microwave rice", "bagged salad", "olive-oil dressing"],
+    steps: "Layer rice, greens, chicken, and dressing. Add beans or avocado if you need more staying power."
+  },
+  {
+    title: "Greek Yogurt Power Bowl",
+    tags: ["protein", "nocook"],
+    time: "5 min",
+    ingredients: ["Greek yogurt", "berries", "oats", "nuts or peanut butter"],
+    steps: "Mix together and keep portions flexible. Good for breakfast or a rescue meal."
+  },
+  {
+    title: "Sheet-Pan Turkey Sausage Dinner",
+    tags: ["protein", "prep"],
+    time: "30 min",
+    ingredients: ["Turkey sausage", "frozen vegetables", "sweet potato", "seasoning"],
+    steps: "Roast everything on one pan until browned. Make extra for two lunches."
+  },
+  {
+    title: "Bean and Egg Taco Plate",
+    tags: ["protein", "budget"],
+    time: "12 min",
+    ingredients: ["Eggs", "black beans", "tortillas", "salsa", "spinach"],
+    steps: "Scramble eggs with spinach, warm beans, and build tacos. Salsa keeps it easy."
+  },
+  {
+    title: "Slow Cooker Chili",
+    tags: ["protein", "budget", "prep"],
+    time: "Low effort",
+    ingredients: ["Lean meat or lentils", "beans", "tomatoes", "chili seasoning"],
+    steps: "Cook in a slow cooker and portion leftovers. Freeze some before you get tired of it."
+  },
+  {
+    title: "No-Cook Tuna Crunch Wrap",
+    tags: ["protein", "nocook", "budget"],
+    time: "8 min",
+    ingredients: ["Tuna pouch", "Greek yogurt or mayo", "wrap", "pickle", "greens"],
+    steps: "Mix tuna, add crunch, wrap with greens. Swap chickpeas if you want plant-based."
+  }
+];
+
 const coachMessages = [
   "The goal is not to win Monday. The goal is to make Tuesday possible. Keep one promise today, even a small one.",
   "A modified workout is not a failed workout. It is you staying in the game with better information.",
@@ -232,6 +281,117 @@ function formatTimer(seconds) {
   const minutes = Math.floor(seconds / 60).toString().padStart(2, "0");
   const remainder = (seconds % 60).toString().padStart(2, "0");
   return `${minutes}:${remainder}`;
+}
+
+function cloudReady() {
+  const config = window.STILL_STRONG_SUPABASE || {};
+  return Boolean(window.supabase && config.url && config.anonKey);
+}
+
+function createCloudClient() {
+  if (!cloudReady()) return null;
+  if (!supabaseClient) {
+    const config = window.STILL_STRONG_SUPABASE;
+    supabaseClient = window.supabase.createClient(config.url, config.anonKey);
+  }
+  return supabaseClient;
+}
+
+function progressSnapshot() {
+  return {
+    jointFocus: state.jointFocus,
+    equipment: state.equipment,
+    energy: state.energy,
+    pain: state.pain,
+    day: state.day,
+    points: state.points,
+    habits: state.habits,
+    activeIndex: state.activeIndex,
+    completedSets: state.completedSets,
+    currentSessionSets: state.currentSessionSets,
+    sessionHistory: state.sessionHistory,
+    customExercises: state.customExercises,
+    removedExercises: state.removedExercises,
+    swappedExercises: state.swappedExercises,
+    progressPhotos: state.progressPhotos,
+    quickMode: state.quickMode
+  };
+}
+
+function applyProgressSnapshot(progress) {
+  if (!progress) return;
+  Object.assign(state, {
+    jointFocus: progress.jointFocus || state.jointFocus,
+    equipment: progress.equipment || state.equipment,
+    energy: progress.energy || state.energy,
+    pain: Number.isFinite(progress.pain) ? progress.pain : state.pain,
+    day: Number.isFinite(progress.day) ? progress.day : state.day,
+    points: Number.isFinite(progress.points) ? progress.points : state.points,
+    habits: progress.habits || state.habits,
+    activeIndex: Number.isFinite(progress.activeIndex) ? progress.activeIndex : state.activeIndex,
+    completedSets: progress.completedSets || state.completedSets,
+    currentSessionSets: Number.isFinite(progress.currentSessionSets) ? progress.currentSessionSets : state.currentSessionSets,
+    sessionHistory: progress.sessionHistory || state.sessionHistory,
+    customExercises: progress.customExercises || state.customExercises,
+    removedExercises: progress.removedExercises || state.removedExercises,
+    swappedExercises: progress.swappedExercises || state.swappedExercises,
+    progressPhotos: progress.progressPhotos || state.progressPhotos,
+    quickMode: progress.quickMode || state.quickMode
+  });
+  persist();
+  renderAll();
+}
+
+function setAccountStatus(message) {
+  const status = $("#accountStatus");
+  if (status) status.textContent = message;
+}
+
+function updateAccountUi() {
+  const configured = cloudReady();
+  $("#syncNow").disabled = !configured;
+  if (!configured) {
+    setAccountStatus("Cloud sync is not connected yet. Add your Supabase URL and anon key in supabase-config.js.");
+    $("#authForm").hidden = false;
+    $("#signedInActions").hidden = true;
+    return;
+  }
+
+  if (currentUser) {
+    $("#authForm").hidden = true;
+    $("#signedInActions").hidden = false;
+    $("#signedInEmail").textContent = `Signed in as ${currentUser.email}`;
+    setAccountStatus("Cloud sync is on. Progress can follow this account across devices.");
+  } else {
+    $("#authForm").hidden = false;
+    $("#signedInActions").hidden = true;
+    setAccountStatus("Sign in or create an account to sync progress privately across devices.");
+  }
+}
+
+async function loadCloudProgress() {
+  const client = createCloudClient();
+  if (!client || !currentUser) return;
+  const { data, error } = await client
+    .from("user_progress")
+    .select("progress")
+    .eq("user_id", currentUser.id)
+    .maybeSingle();
+  if (error) throw error;
+  if (data?.progress) applyProgressSnapshot(data.progress);
+}
+
+async function saveCloudProgress() {
+  const client = createCloudClient();
+  if (!client || !currentUser) return;
+  const { error } = await client
+    .from("user_progress")
+    .upsert({
+      user_id: currentUser.id,
+      progress: progressSnapshot(),
+      updated_at: new Date().toISOString()
+    });
+  if (error) throw error;
 }
 
 function exerciseKey(exercise) {
@@ -393,6 +553,67 @@ function renderMeals() {
   });
 }
 
+function renderRecipes() {
+  const filtered = recipes.filter((recipe) => {
+    return state.recipeFilter === "all" || recipe.tags.includes(state.recipeFilter);
+  });
+  $("#recipeIdeas").innerHTML = filtered.map((recipe) => `
+    <div class="recipe-card">
+      <div>
+        <h3>${recipe.title}</h3>
+        <p>${recipe.steps}</p>
+      </div>
+      <ul>
+        ${recipe.ingredients.map((item) => `<li>${item}</li>`).join("")}
+      </ul>
+      <div class="recipe-meta">
+        <span>${recipe.time}</span>
+        ${recipe.tags.map((tag) => `<span>${tag}</span>`).join("")}
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderPhotos() {
+  if (!state.progressPhotos.length) {
+    $("#photoGrid").innerHTML = `<div class="photo-empty">No progress photos yet. Add one when you want a private visual check-in.</div>`;
+    return;
+  }
+  $("#photoGrid").innerHTML = state.progressPhotos.map((photo) => `
+    <div class="photo-card">
+      <img src="${photo.dataUrl}" alt="Progress check-in from ${formatDate(photo.date)}" />
+      <div class="photo-card-body">
+        <h3>${formatDate(photo.date)}</h3>
+        <p>${photo.note || "Progress check-in"}</p>
+        <button class="mini-button remove" data-photo-id="${photo.id}" type="button">Remove</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function resizeImage(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = () => {
+      const image = new Image();
+      image.onerror = reject;
+      image.onload = () => {
+        const maxSide = 900;
+        const scale = Math.min(1, maxSide / Math.max(image.width, image.height));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(image.width * scale);
+        canvas.height = Math.round(image.height * scale);
+        const context = canvas.getContext("2d");
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL("image/jpeg", 0.78));
+      };
+      image.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 function renderPain() {
   const pain = state.pain;
   $("#painValue").textContent = pain;
@@ -450,7 +671,13 @@ function persist() {
   localStorage.setItem("stillStrongCustomExercises", JSON.stringify(state.customExercises));
   localStorage.setItem("stillStrongRemovedExercises", JSON.stringify(state.removedExercises));
   localStorage.setItem("stillStrongSwappedExercises", JSON.stringify(state.swappedExercises));
+  localStorage.setItem("stillStrongProgressPhotos", JSON.stringify(state.progressPhotos));
   localStorage.setItem("stillStrongQuickMode", state.quickMode);
+  if (currentUser) {
+    saveCloudProgress().catch(() => {
+      setAccountStatus("Saved on this device. Cloud sync will retry when you tap Sync Now.");
+    });
+  }
 }
 
 function addPoint(amount = 1) {
@@ -473,6 +700,8 @@ function renderAll() {
   renderSession();
   renderSwaps();
   renderMeals();
+  renderRecipes();
+  renderPhotos();
   renderPain();
   renderCoach();
   renderWeek();
@@ -680,6 +909,44 @@ $("#timerReset").addEventListener("click", () => {
 
 $("#exerciseSearch").addEventListener("input", renderLibrary);
 
+$("#recipeFilter").addEventListener("change", (event) => {
+  state.recipeFilter = event.target.value;
+  renderRecipes();
+});
+
+$("#savePhoto").addEventListener("click", async () => {
+  const file = $("#progressPhoto").files[0];
+  if (!file) {
+    setQuickStatus("Choose a photo first, then tap Save Photo.");
+    return;
+  }
+  try {
+    const dataUrl = await resizeImage(file);
+    state.progressPhotos.unshift({
+      id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+      date: new Date().toISOString(),
+      note: $("#photoNote").value.trim(),
+      dataUrl
+    });
+    state.progressPhotos = state.progressPhotos.slice(0, 12);
+    $("#progressPhoto").value = "";
+    $("#photoNote").value = "";
+    persist();
+    renderPhotos();
+    setQuickStatus("Progress photo saved privately.");
+  } catch {
+    setQuickStatus("That photo could not be saved. Try a smaller image.");
+  }
+});
+
+$("#photoGrid").addEventListener("click", (event) => {
+  const button = event.target.closest("button[data-photo-id]");
+  if (!button) return;
+  state.progressPhotos = state.progressPhotos.filter((photo) => photo.id !== button.dataset.photoId);
+  persist();
+  renderPhotos();
+});
+
 document.querySelectorAll(".meal-tab").forEach((tab) => {
   tab.addEventListener("click", () => {
     state.day = Number(tab.dataset.day);
@@ -704,8 +971,97 @@ $("#saveNote").addEventListener("click", () => {
   $("#coachMessage").innerHTML = "<p>Saved. That note is useful data, not homework. Tomorrow gets to be built from what you learned today.</p>";
 });
 
+$("#signUp").addEventListener("click", async () => {
+  const client = createCloudClient();
+  if (!client) {
+    setAccountStatus("Cloud sync needs Supabase setup first. Add your URL and anon key in supabase-config.js.");
+    return;
+  }
+  const email = $("#authEmail").value.trim();
+  const password = $("#authPassword").value;
+  if (!email || !password) {
+    setAccountStatus("Enter an email and password first.");
+    return;
+  }
+  const { data, error } = await client.auth.signUp({ email, password });
+  if (error) {
+    setAccountStatus(error.message);
+    return;
+  }
+  currentUser = data.user || data.session?.user || null;
+  updateAccountUi();
+  setAccountStatus(data.session ? "Account created and sync is on." : "Account created. Check your email to confirm, then sign in.");
+  if (currentUser) await saveCloudProgress();
+});
+
+$("#signIn").addEventListener("click", async () => {
+  const client = createCloudClient();
+  if (!client) {
+    setAccountStatus("Cloud sync needs Supabase setup first. Add your URL and anon key in supabase-config.js.");
+    return;
+  }
+  const email = $("#authEmail").value.trim();
+  const password = $("#authPassword").value;
+  if (!email || !password) {
+    setAccountStatus("Enter an email and password first.");
+    return;
+  }
+  const { data, error } = await client.auth.signInWithPassword({ email, password });
+  if (error) {
+    setAccountStatus(error.message);
+    return;
+  }
+  currentUser = data.user;
+  updateAccountUi();
+  await loadCloudProgress();
+  await saveCloudProgress();
+  setAccountStatus("Signed in. Progress is synced for this account.");
+});
+
+$("#signOut").addEventListener("click", async () => {
+  const client = createCloudClient();
+  if (client) await client.auth.signOut();
+  currentUser = null;
+  updateAccountUi();
+});
+
+$("#syncNow").addEventListener("click", async () => {
+  if (!currentUser) {
+    setAccountStatus("Sign in first, then tap Sync Now.");
+    return;
+  }
+  try {
+    await loadCloudProgress();
+    await saveCloudProgress();
+    setAccountStatus("Synced. Your latest progress is saved to your account.");
+  } catch (error) {
+    setAccountStatus(error.message || "Cloud sync failed. Check your Supabase setup.");
+  }
+});
+
 $("#noteBox").value = localStorage.getItem("stillStrongLastNote") || "";
 renderAll();
+updateAccountUi();
+
+async function restoreCloudSession() {
+  const client = createCloudClient();
+  if (!client) {
+    updateAccountUi();
+    return;
+  }
+  const { data } = await client.auth.getUser();
+  currentUser = data.user || null;
+  updateAccountUi();
+  if (currentUser) {
+    try {
+      await loadCloudProgress();
+    } catch (error) {
+      setAccountStatus(error.message || "Could not load cloud progress.");
+    }
+  }
+}
+
+restoreCloudSession();
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {

@@ -12,7 +12,8 @@
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.svg" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=3" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
   <body>
     <main class="app-shell">
@@ -21,7 +22,9 @@
         <a href="#session">Workout</a>
         <a href="#library">Library</a>
         <a href="#meals">Meals</a>
+        <a href="#photos">Photos</a>
         <a href="#progress">Progress</a>
+        <a href="#account">Account</a>
       </nav>
 
       <section class="quick-start" id="today" aria-labelledby="quickStartTitle">
@@ -251,6 +254,19 @@
             <button class="meal-tab" data-day="2" type="button">Day 3</button>
           </div>
           <div id="mealPlan" class="meal-plan"></div>
+          <div class="recipe-tools">
+            <label>
+              Recipe ideas
+              <select id="recipeFilter">
+                <option value="all">All ideas</option>
+                <option value="protein">High protein</option>
+                <option value="budget">Budget friendly</option>
+                <option value="nocook">No-cook / low effort</option>
+                <option value="prep">Meal prep</option>
+              </select>
+            </label>
+          </div>
+          <div id="recipeIdeas" class="recipe-list"></div>
         </article>
 
         <article class="panel coach-panel">
@@ -272,12 +288,65 @@
         </article>
       </section>
 
+      <section class="panel photo-panel" id="photos">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Photo progress</p>
+            <h2>Private visual check-ins</h2>
+          </div>
+        </div>
+        <div class="photo-intro">
+          <p>Use the same lighting and angle when you can. These photos stay on this device unless cloud sync is connected.</p>
+        </div>
+        <div class="photo-form">
+          <label>
+            Add photo
+            <input id="progressPhoto" type="file" accept="image/*" />
+          </label>
+          <label>
+            Check-in note
+            <input id="photoNote" type="text" placeholder="Example: Week 2, less knee swelling" />
+          </label>
+          <button id="savePhoto" type="button">Save Photo</button>
+        </div>
+        <div id="photoGrid" class="photo-grid"></div>
+      </section>
+
       <section class="timeline-band" aria-labelledby="weekRhythm">
         <div>
           <p class="eyebrow">Weekly rhythm</p>
           <h2 id="weekRhythm">Three lifts, two gentle movers, two flexible days</h2>
         </div>
         <div class="week-track" id="weekTrack"></div>
+      </section>
+
+      <section class="panel account-panel" id="account">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Account</p>
+            <h2>Save progress across devices</h2>
+          </div>
+          <button class="ghost-button" id="syncNow" type="button">Sync Now</button>
+        </div>
+        <div class="account-status" id="accountStatus">
+          Local mode is on. Your progress is private on this device until cloud sync is connected.
+        </div>
+        <div class="auth-grid" id="authForm">
+          <label>
+            Email
+            <input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com" />
+          </label>
+          <label>
+            Password
+            <input id="authPassword" type="password" autocomplete="current-password" placeholder="At least 6 characters" />
+          </label>
+          <button id="signIn" type="button">Sign In</button>
+          <button class="ghost-button" id="signUp" type="button">Create Account</button>
+        </div>
+        <div class="signed-in-actions" id="signedInActions" hidden>
+          <p id="signedInEmail"></p>
+          <button class="danger-button" id="signOut" type="button">Sign Out</button>
+        </div>
       </section>
 
       <footer>
@@ -294,6 +363,7 @@
         </p>
       </footer>
     </main>
-    <script src="app.js"></script>
+    <script src="supabase-config.js?v=3"></script>
+    <script src="app.js?v=3"></script>
   </body>
 </html>
