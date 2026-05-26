@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Still Strong Exercise App</title>
+    <meta name="theme-color" content="#1f4f45" />
+    <meta name="description" content="A joint-aware exercise and meal support app for people rebuilding consistency with limited mobility or osteoarthritis pain." />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Still Strong" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.svg" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <nav class="app-nav" aria-label="App sections">
+        <a href="#today">Today</a>
+        <a href="#session">Workout</a>
+        <a href="#library">Library</a>
+        <a href="#meals">Meals</a>
+        <a href="#progress">Progress</a>
+      </nav>
+
+      <section class="quick-start" id="today" aria-labelledby="quickStartTitle">
+        <div class="quick-copy">
+          <p class="eyebrow">Still Strong</p>
+          <h2 id="quickStartTitle">What do you need today?</h2>
+          <p id="quickStartStatus">Pick one. The app will set up the next screen for you.</p>
+          <button class="install-button" id="installApp" type="button" hidden>Install App</button>
+        </div>
+        <div class="choice-grid">
+          <button class="choice-card" data-quick="workout" type="button">
+            <strong>I want to work out</strong>
+            <span>Start a joint-aware strength session.</span>
+          </button>
+          <button class="choice-card" data-quick="pain" type="button">
+            <strong>I'm hurting today</strong>
+            <span>Switch to gentler chair, band, or water options.</span>
+          </button>
+          <button class="choice-card" data-quick="track" type="button">
+            <strong>Help me stay on track</strong>
+            <span>Open meals, habits, and a kind reset plan.</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Joint-aware strength, meals, and momentum</p>
+          <h1>Still Strong</h1>
+          <p>
+            A forgiving weekly rhythm for people who know the gym life, but now need
+            smarter swaps, steadier meals, and a plan that adapts when osteoarthritis
+            pain shows up.
+          </p>
+        </div>
+        <div class="hero-panel" aria-label="Current progress summary">
+          <div>
+            <span class="metric" id="weekScore">0</span>
+            <span class="metric-label">steady points this week</span>
+          </div>
+          <div class="ring" id="painRing">
+            <span id="painValue">3</span>
+            <small>pain</small>
+          </div>
+        </div>
+      </section>
+
+      <section class="control-band" aria-labelledby="planSettings">
+        <details>
+          <summary>
+            <span>
+              <strong id="planSettings">Adjust plan</strong>
+              <small>For people who want more control over joints, equipment, and energy.</small>
+            </span>
+          </summary>
+          <div class="controls">
+            <label>
+              Joint focus
+              <select id="jointFocus">
+                <option value="knees">Knees</option>
+                <option value="hips">Hips</option>
+                <option value="back">Back</option>
+                <option value="shoulders">Shoulders</option>
+                <option value="hands">Hands</option>
+              </select>
+            </label>
+            <label>
+              Equipment
+              <select id="equipment">
+                <option value="weights">Weights</option>
+                <option value="bands">Bands</option>
+                <option value="chair">Chair only</option>
+                <option value="water">Pool or water</option>
+              </select>
+            </label>
+            <label>
+              Energy
+              <select id="energy">
+                <option value="steady">Steady</option>
+                <option value="low">Low</option>
+                <option value="strong">Strong</option>
+              </select>
+            </label>
+            <button id="refreshPlan" type="button">Refresh Plan</button>
+          </div>
+        </details>
+      </section>
+
+      <section class="grid two-column">
+        <article class="panel workout-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Today</p>
+              <h2 id="workoutTitle">Strength with options</h2>
+            </div>
+            <button class="ghost-button" id="startWorkout" type="button">Start Workout</button>
+          </div>
+          <div class="pain-check">
+            <label for="painSlider">Joint pain right now</label>
+            <div class="pain-scale" aria-hidden="true">
+              <span>0 🙂<small>easy</small></span>
+              <span>3 😐<small>aware</small></span>
+              <span>6 😣<small>modify</small></span>
+              <span>10 🛑<small>stop</small></span>
+            </div>
+            <input id="painSlider" type="range" min="0" max="10" value="3" />
+            <p id="painAdvice">Warm up slowly and keep the first set easy.</p>
+          </div>
+          <details class="exercise-editor">
+            <summary>Add your own exercise</summary>
+            <div class="editor-grid">
+              <label>
+                Exercise
+                <input id="customExerciseName" type="text" placeholder="Example: Cable row" />
+              </label>
+              <label>
+                Sets or time
+                <input id="customExerciseDose" type="text" placeholder="Example: 2 x 10" />
+              </label>
+              <label class="editor-wide">
+                Notes
+                <input id="customExerciseCue" type="text" placeholder="How to do it safely for you" />
+              </label>
+              <button id="addExercise" type="button">Add Exercise</button>
+            </div>
+          </details>
+          <div id="workoutList" class="exercise-list"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Swap board</p>
+              <h2>When a joint says no</h2>
+            </div>
+          </div>
+          <div id="swapList" class="swap-list"></div>
+        </article>
+      </section>
+
+      <section class="grid two-column" id="session">
+        <article class="panel session-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Workout mode</p>
+              <h2>Move through one set at a time</h2>
+            </div>
+            <button class="ghost-button" id="completeWorkout" type="button">Finish Session</button>
+          </div>
+          <div class="session-card">
+            <div>
+              <p class="eyebrow">Current move</p>
+              <h3 id="activeExercise">Start a workout</h3>
+              <p id="activeCue">Your first exercise will show here.</p>
+            </div>
+            <div class="timer" aria-live="polite">
+              <span id="timerValue">00:45</span>
+              <small>rest timer</small>
+            </div>
+          </div>
+          <div class="swap-alert" id="sessionSwap" aria-live="polite">
+            Tap Too Hard if this move is not right today. You will get a simpler option without losing progress.
+          </div>
+          <div class="session-actions">
+            <button id="setDone" type="button">Set Done</button>
+            <button class="danger-button" id="tooHard" type="button">Too Hard</button>
+            <button id="swapMove" type="button">Swap Move</button>
+            <button id="nextExercise" type="button">Next</button>
+            <button class="ghost-button" id="timerToggle" type="button">Start Timer</button>
+            <button class="ghost-button" id="timerReset" type="button">Reset</button>
+            <button class="ghost-button" id="prevExercise" type="button">Previous</button>
+          </div>
+          <div class="session-progress" id="sessionProgress"></div>
+        </article>
+
+        <article class="panel" id="progress">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Progress</p>
+              <h2>Recent sessions</h2>
+            </div>
+          </div>
+          <div class="stat-row">
+            <div>
+              <strong id="sessionCount">0</strong>
+              <span>sessions</span>
+            </div>
+            <div>
+              <strong id="setCount">0</strong>
+              <span>sets logged</span>
+            </div>
+            <div>
+              <strong id="mobilityCount">0</strong>
+              <span>habits</span>
+            </div>
+          </div>
+          <div id="sessionLog" class="session-log"></div>
+        </article>
+      </section>
+
+      <section class="panel library-panel" id="library">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Exercise library</p>
+            <h2>Find a joint-friendly option fast</h2>
+          </div>
+          <label class="search-label">
+            Search
+            <input id="exerciseSearch" type="search" placeholder="Try row, squat, water, shoulder..." />
+          </label>
+        </div>
+        <div id="libraryList" class="library-list"></div>
+      </section>
+
+      <section class="grid two-column" id="meals">
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Meals</p>
+              <h2>Simple fuel plan</h2>
+            </div>
+            <button class="ghost-button" id="completeMeals" type="button">Meals On Track</button>
+          </div>
+          <div class="meal-tabs" role="tablist" aria-label="Meal plan days">
+            <button class="meal-tab active" data-day="0" type="button">Day 1</button>
+            <button class="meal-tab" data-day="1" type="button">Day 2</button>
+            <button class="meal-tab" data-day="2" type="button">Day 3</button>
+          </div>
+          <div id="mealPlan" class="meal-plan"></div>
+        </article>
+
+        <article class="panel coach-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Consistency</p>
+              <h2>Keep going without the guilt spiral</h2>
+            </div>
+          </div>
+          <div class="coach-card" id="coachMessage"></div>
+          <div class="habit-grid">
+            <button class="habit" data-habit="water" type="button">Water</button>
+            <button class="habit" data-habit="protein" type="button">Protein</button>
+            <button class="habit" data-habit="walk" type="button">Gentle cardio</button>
+            <button class="habit" data-habit="mobility" type="button">Mobility</button>
+          </div>
+          <textarea id="noteBox" rows="4" placeholder="What helped today? What needs to be easier tomorrow?"></textarea>
+          <button id="saveNote" type="button">Save Note</button>
+        </article>
+      </section>
+
+      <section class="timeline-band" aria-labelledby="weekRhythm">
+        <div>
+          <p class="eyebrow">Weekly rhythm</p>
+          <h2 id="weekRhythm">Three lifts, two gentle movers, two flexible days</h2>
+        </div>
+        <div class="week-track" id="weekTrack"></div>
+      </section>
+
+      <footer>
+        <p>
+          This planner is educational and not medical advice. Stop activity for sharp,
+          worsening, or unusual pain, and work with a clinician or physical therapist
+          for individualized osteoarthritis guidance.
+        </p>
+        <p>
+          Guidance basis:
+          <a href="https://www.cdc.gov/arthritis/prevention/index.html">CDC joint-friendly activity</a>,
+          <a href="https://www.niams.nih.gov/health-topics/osteoarthritis/diagnosis-treatment-and-steps-to-take">NIAMS osteoarthritis steps</a>,
+          <a href="https://www.arthritis.org/health-wellness/healthy-living/physical-activity/getting-started/exercise-and-strength-training-with-arthritis">Arthritis Foundation strength guidance</a>.
+        </p>
+      </footer>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>

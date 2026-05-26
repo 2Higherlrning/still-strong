@@ -1,0 +1,40 @@
+{
+  "name": "Still Strong Exercise App",
+  "short_name": "Still Strong",
+  "description": "Joint-aware workouts, pain-friendly swaps, meal support, and gentle progress tracking.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f7f4ed",
+  "theme_color": "#1f4f45",
+  "categories": ["health", "fitness", "lifestyle"],
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/apple-touch-icon.svg",
+      "sizes": "180x180",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Start Workout",
+      "short_name": "Workout",
+      "url": "./index.html#session",
+      "description": "Open workout mode"
+    },
+    {
+      "name": "Pain-Friendly Plan",
+      "short_name": "Pain Help",
+      "url": "./index.html#today",
+      "description": "Choose gentler exercise options"
+    }
+  ]
+}

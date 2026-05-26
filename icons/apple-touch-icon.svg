@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="Still Strong app icon">
+  <rect width="180" height="180" rx="38" fill="#1f4f45"/>
+  <circle cx="90" cy="84" r="56" fill="#f7f4ed"/>
+  <path d="M55 96c13 14 27 21 43 21 15 0 27-6 36-17" fill="none" stroke="#2f6f61" stroke-width="12" stroke-linecap="round"/>
+  <path d="M56 72h68" fill="none" stroke="#1d2527" stroke-width="12" stroke-linecap="round"/>
+  <path d="M68 56v33M112 56v33" fill="none" stroke="#1d2527" stroke-width="12" stroke-linecap="round"/>
+  <text x="90" y="160" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="800" fill="#f7f4ed">SS</text>
+</svg>
