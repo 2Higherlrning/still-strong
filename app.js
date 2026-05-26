@@ -347,6 +347,56 @@ function setAccountStatus(message) {
   if (status) status.textContent = message;
 }
 
+function dataUrlToBlob(dataUrl) {
+  const [header, base64] = dataUrl.split(",");
+  const mime = header.match(/:(.*?);/)?.[1] || "image/jpeg";
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let index = 0; index < binary.length; index += 1) {
+    bytes[index] = binary.charCodeAt(index);
+  }
+  return new Blob([bytes], { type: mime });
+}
+
+async function uploadProgressPhoto(id, dataUrl) {
+  const client = createCloudClient();
+  if (!client || !currentUser) return null;
+  const storagePath = `${currentUser.id}/${id}.jpg`;
+  const { error } = await client.storage
+    .from("progress-photos")
+    .upload(storagePath, dataUrlToBlob(dataUrl), {
+      contentType: "image/jpeg",
+      upsert: true
+    });
+  if (error) throw error;
+  return storagePath;
+}
+
+async function signedPhotoUrl(storagePath) {
+  const client = createCloudClient();
+  if (!client || !currentUser || !storagePath) return "";
+  const { data, error } = await client.storage
+    .from("progress-photos")
+    .createSignedUrl(storagePath, 60 * 30);
+  if (error) throw error;
+  return data.signedUrl;
+}
+
+async function hydratePhotoUrls() {
+  if (!currentUser) return;
+  let changed = false;
+  await Promise.all(state.progressPhotos.map(async (photo) => {
+    if (!photo.storagePath || photo.signedUrl) return;
+    try {
+      photo.signedUrl = await signedPhotoUrl(photo.storagePath);
+      changed = true;
+    } catch {
+      photo.signedUrl = "";
+    }
+  }));
+  if (changed) renderPhotos();
+}
+
 function updateAccountUi() {
   const configured = cloudReady();
   $("#syncNow").disabled = !configured;
@@ -581,7 +631,9 @@ function renderPhotos() {
   }
   $("#photoGrid").innerHTML = state.progressPhotos.map((photo) => `
     <div class="photo-card">
-      <img src="${photo.dataUrl}" alt="Progress check-in from ${formatDate(photo.date)}" />
+      ${photo.dataUrl || photo.signedUrl
+        ? `<img src="${photo.dataUrl || photo.signedUrl}" alt="Progress check-in from ${formatDate(photo.date)}" />`
+        : `<div class="photo-placeholder">Photo saved in cloud</div>`}
       <div class="photo-card-body">
         <h3>${formatDate(photo.date)}</h3>
         <p>${photo.note || "Progress check-in"}</p>
@@ -922,11 +974,18 @@ $("#savePhoto").addEventListener("click", async () => {
   }
   try {
     const dataUrl = await resizeImage(file);
+    const id = crypto.randomUUID ? crypto.randomUUID() : String(Date.now());
+    let storagePath = "";
+    if (currentUser) {
+      storagePath = await uploadProgressPhoto(id, dataUrl);
+    }
     state.progressPhotos.unshift({
-      id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+      id,
       date: new Date().toISOString(),
       note: $("#photoNote").value.trim(),
-      dataUrl
+      dataUrl: storagePath ? "" : dataUrl,
+      storagePath,
+      signedUrl: storagePath ? await signedPhotoUrl(storagePath) : ""
     });
     state.progressPhotos = state.progressPhotos.slice(0, 12);
     $("#progressPhoto").value = "";
@@ -942,7 +1001,11 @@ $("#savePhoto").addEventListener("click", async () => {
 $("#photoGrid").addEventListener("click", (event) => {
   const button = event.target.closest("button[data-photo-id]");
   if (!button) return;
-  state.progressPhotos = state.progressPhotos.filter((photo) => photo.id !== button.dataset.photoId);
+  const photo = state.progressPhotos.find((item) => item.id === button.dataset.photoId);
+  if (photo?.storagePath && currentUser) {
+    createCloudClient()?.storage.from("progress-photos").remove([photo.storagePath]);
+  }
+  state.progressPhotos = state.progressPhotos.filter((item) => item.id !== button.dataset.photoId);
   persist();
   renderPhotos();
 });
@@ -1055,6 +1118,7 @@ async function restoreCloudSession() {
   if (currentUser) {
     try {
       await loadCloudProgress();
+      await hydratePhotoUrls();
     } catch (error) {
       setAccountStatus(error.message || "Could not load cloud progress.");
     }

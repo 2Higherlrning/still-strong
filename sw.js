@@ -1,4 +1,4 @@
-const CACHE_NAME = "still-strong-v3";
+const CACHE_NAME = "still-strong-v4";
 const APP_ASSETS = [
   "./",
   "./index.html",

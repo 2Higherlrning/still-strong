@@ -851,6 +851,17 @@ input[type="range"] {
   background: #f4f0e8;
 }
 
+.photo-placeholder {
+  min-height: 260px;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  color: var(--muted);
+  background: #f4f0e8;
+  font-weight: 900;
+  text-align: center;
+}
+
 .photo-card-body {
   display: grid;
   gap: 8px;
