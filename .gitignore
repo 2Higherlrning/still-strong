@@ -1,0 +1,11 @@
+# OS/editor noise
+.DS_Store
+Thumbs.db
+*.log
+
+# Large design/print artifacts not needed by the web app
+*.stl
+
+# Local-only environment files
+.env
+.env.*

@@ -1,3 +1,8 @@
+drop policy if exists "Users can upload their own progress photos" on storage.objects;
+drop policy if exists "Users can view their own progress photos" on storage.objects;
+drop policy if exists "Users can update their own progress photos" on storage.objects;
+drop policy if exists "Users can delete their own progress photos" on storage.objects;
+
 create policy "Users can upload their own progress photos"
 on storage.objects
 for insert

@@ -6,18 +6,25 @@ create table if not exists public.user_progress (
 
 alter table public.user_progress enable row level security;
 
+drop policy if exists "Users can read their own progress" on public.user_progress;
+drop policy if exists "Users can insert their own progress" on public.user_progress;
+drop policy if exists "Users can update their own progress" on public.user_progress;
+
 create policy "Users can read their own progress"
 on public.user_progress
 for select
-using (auth.uid() = user_id);
+to authenticated
+using ((select auth.uid()) = user_id);
 
 create policy "Users can insert their own progress"
 on public.user_progress
 for insert
-with check (auth.uid() = user_id);
+to authenticated
+with check ((select auth.uid()) = user_id);
 
 create policy "Users can update their own progress"
 on public.user_progress
 for update
-using (auth.uid() = user_id)
-with check (auth.uid() = user_id);
+to authenticated
+using ((select auth.uid()) = user_id)
+with check ((select auth.uid()) = user_id);
