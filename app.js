@@ -185,53 +185,53 @@ const swaps = {
 
 const meals = [
   [
-    ["Breakfast", "Greek yogurt or cottage cheese, berries, chopped nuts, and oats."],
-    ["Lunch", "Chicken, tuna, tofu, or beans over greens with rice or potatoes and olive-oil dressing."],
-    ["Dinner", "Salmon, turkey, lentils, or eggs with roasted vegetables and a fist-size carb."],
-    ["Rescue snack", "Protein shake, boiled eggs, hummus with vegetables, or a turkey wrap."]
+    ["Breakfast", "Greek yogurt or cottage cheese, berries, chopped nuts, and chia seeds instead of oats."],
+    ["Lunch", "Chicken, tuna, tofu, or beans over greens with cauliflower rice, avocado, or extra vegetables instead of rice or potatoes."],
+    ["Dinner", "Salmon, turkey, lentils, or eggs with roasted vegetables; use cauliflower mash, zucchini noodles, or a big salad in place of grains."],
+    ["Rescue snack", "Protein shake, boiled eggs, hummus with vegetables, or turkey lettuce roll-ups."]
   ],
   [
-    ["Breakfast", "Egg scramble with spinach, toast, and fruit."],
-    ["Lunch", "Leftover protein bowl: lean protein, vegetables, avocado, and quinoa or rice."],
+    ["Breakfast", "Egg scramble with spinach, avocado, and fruit; skip toast or use cucumber/tomato slices on the side."],
+    ["Lunch", "Leftover protein bowl: lean protein, vegetables, avocado, and cauliflower rice or shredded cabbage instead of quinoa or rice."],
     ["Dinner", "Slow-cooker chili with beans, lean meat or lentils, and a side salad."],
     ["Rescue snack", "Apple with peanut butter, jerky, edamame, or yogurt."]
   ],
   [
     ["Breakfast", "Protein smoothie with milk, protein powder or yogurt, banana, and spinach."],
-    ["Lunch", "Soup and sandwich: vegetable soup plus turkey, egg, tuna, or chickpea salad."],
-    ["Dinner", "Sheet-pan protein with colorful vegetables and sweet potato."],
+    ["Lunch", "Soup and lettuce cups: vegetable soup plus turkey, egg, tuna, or chickpea salad in romaine or over greens."],
+    ["Dinner", "Sheet-pan protein with colorful vegetables and cauliflower mash, roasted mushrooms, or green beans instead of sweet potato."],
     ["Rescue snack", "Cheese stick, nuts, fruit, or ready-made protein option."]
   ]
 ];
 
 const recipes = [
   {
-    title: "Rotisserie Protein Bowl",
+    title: "Rotisserie Cauliflower Rice Bowl",
     tags: ["protein", "nocook", "budget"],
     time: "10 min",
-    ingredients: ["Rotisserie chicken", "microwave rice", "bagged salad", "olive-oil dressing"],
-    steps: "Layer rice, greens, chicken, and dressing. Add beans or avocado if you need more staying power."
+    ingredients: ["Rotisserie chicken", "cauliflower rice", "bagged salad", "olive-oil dressing"],
+    steps: "Layer cauliflower rice, greens, chicken, and dressing. Add avocado, cheese, or extra vegetables if you need more staying power."
   },
   {
     title: "Greek Yogurt Power Bowl",
     tags: ["protein", "nocook"],
     time: "5 min",
-    ingredients: ["Greek yogurt", "berries", "oats", "nuts or peanut butter"],
+    ingredients: ["Greek yogurt", "berries", "chia seeds", "nuts or peanut butter"],
     steps: "Mix together and keep portions flexible. Good for breakfast or a rescue meal."
   },
   {
-    title: "Sheet-Pan Turkey Sausage Dinner",
+    title: "Sheet-Pan Turkey Sausage and Greens",
     tags: ["protein", "prep"],
     time: "30 min",
-    ingredients: ["Turkey sausage", "frozen vegetables", "sweet potato", "seasoning"],
-    steps: "Roast everything on one pan until browned. Make extra for two lunches."
+    ingredients: ["Turkey sausage", "frozen vegetables", "green beans or broccoli", "seasoning"],
+    steps: "Roast everything on one pan until browned. Serve over greens or cauliflower mash and make extra for two lunches."
   },
   {
-    title: "Bean and Egg Taco Plate",
+    title: "Bean and Egg Lettuce Taco Plate",
     tags: ["protein", "budget"],
     time: "12 min",
-    ingredients: ["Eggs", "black beans", "tortillas", "salsa", "spinach"],
-    steps: "Scramble eggs with spinach, warm beans, and build tacos. Salsa keeps it easy."
+    ingredients: ["Eggs", "black beans", "romaine leaves", "salsa", "spinach"],
+    steps: "Scramble eggs with spinach, warm beans, and spoon into romaine leaves. Salsa keeps it easy."
   },
   {
     title: "Slow Cooker Chili",
@@ -241,11 +241,11 @@ const recipes = [
     steps: "Cook in a slow cooker and portion leftovers. Freeze some before you get tired of it."
   },
   {
-    title: "No-Cook Tuna Crunch Wrap",
+    title: "No-Cook Tuna Crunch Lettuce Wrap",
     tags: ["protein", "nocook", "budget"],
     time: "8 min",
-    ingredients: ["Tuna pouch", "Greek yogurt or mayo", "wrap", "pickle", "greens"],
-    steps: "Mix tuna, add crunch, wrap with greens. Swap chickpeas if you want plant-based."
+    ingredients: ["Tuna pouch", "Greek yogurt or mayo", "lettuce leaves", "pickle", "greens"],
+    steps: "Mix tuna, add crunch, and wrap with lettuce or pile over greens. Swap chickpeas if you want plant-based."
   }
 ];
 
