@@ -246,6 +246,18 @@ const recipes = [
     time: "8 min",
     ingredients: ["Tuna pouch", "Greek yogurt or mayo", "lettuce leaves", "pickle", "greens"],
     steps: "Mix tuna, add crunch, and wrap with lettuce or pile over greens. Swap chickpeas if you want plant-based."
+  },
+  {
+    title: "Peach Cobbler",
+    tags: ["dessert", "prep"],
+    time: "Serves 8 | 45 min bake",
+    ingredients: [
+      "Peach filling: 6 cups sliced fresh peaches, 1 1/2 cups sugar, 1/4 cup water",
+      "Thickener: 3 tablespoons flour, 1/4 cup sugar, pinch of salt, cinnamon, nutmeg, and allspice",
+      "Cobbler topping: 1 cup all-purpose flour, 1/2 cup sugar, 2 teaspoons baking powder, 3/4 cup milk, 1/2 teaspoon salt",
+      "Optional garnish: fresh sliced peaches, powdered sugar, fresh mint sprig"
+    ],
+    steps: "Preheat oven to 400°F. Simmer peaches, 1 1/2 cups sugar, and water until softened, then stir in the flour, sugar, salt, and spices until thickened. Pour into a 9-inch cast-iron skillet or cobbler pan and cool slightly. Whisk topping ingredients, stir in salt, pour irregularly over the center, and bake about 45 minutes until golden. Serve warm."
   }
 ];
 

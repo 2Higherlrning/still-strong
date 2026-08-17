@@ -1,4 +1,4 @@
-const CACHE_NAME = "still-strong-v4";
+const CACHE_NAME = "still-strong-v5";
 const APP_ASSETS = [
   "./",
   "./index.html",
@@ -6,6 +6,7 @@ const APP_ASSETS = [
   "./terms.html",
   "./medical-disclaimer.html",
   "./data-deletion.html",
+  "./monthly-menu.html",
   "./styles.css",
   "./app.js",
   "./supabase-config.js",

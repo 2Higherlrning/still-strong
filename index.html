@@ -12,7 +12,7 @@
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.svg" />
-    <link rel="stylesheet" href="styles.css?v=4" />
+    <link rel="stylesheet" href="styles.css?v=5" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
   <body>
@@ -246,7 +246,10 @@
               <p class="eyebrow">Meals</p>
               <h2>Simple fuel plan</h2>
             </div>
-            <button class="ghost-button" id="completeMeals" type="button">Meals On Track</button>
+            <div class="heading-actions">
+              <a class="link-button" href="monthly-menu.html">Monthly Menu</a>
+              <button class="ghost-button" id="completeMeals" type="button">Meals On Track</button>
+            </div>
           </div>
           <div class="meal-tabs" role="tablist" aria-label="Meal plan days">
             <button class="meal-tab active" data-day="0" type="button">Day 1</button>
@@ -263,6 +266,7 @@
                 <option value="budget">Budget friendly</option>
                 <option value="nocook">No-cook / low effort</option>
                 <option value="prep">Meal prep</option>
+                <option value="dessert">Dessert</option>
               </select>
             </label>
           </div>
@@ -359,7 +363,8 @@
           <a href="privacy.html">Privacy Policy</a> ·
           <a href="terms.html">Terms of Use</a> ·
           <a href="medical-disclaimer.html">Medical Disclaimer</a> ·
-          <a href="data-deletion.html">Delete My Data</a>
+          <a href="data-deletion.html">Delete My Data</a> ·
+          <a href="monthly-menu.html">Monthly Menu</a>
         </p>
         <p>
           Guidance basis:
@@ -369,7 +374,7 @@
         </p>
       </footer>
     </main>
-    <script src="supabase-config.js?v=4"></script>
-    <script src="app.js?v=4"></script>
+    <script src="supabase-config.js?v=5"></script>
+    <script src="app.js?v=5"></script>
   </body>
 </html>
